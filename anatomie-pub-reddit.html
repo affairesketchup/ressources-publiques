@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomie d'une pub Reddit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Mise en page : maquette de téléphone (fil Reddit) au centre, annotations de part et d'autre reliées par des traits ; sur mobile, légende numérotée sous la maquette. */
+:root {
+  --bg: #f6f4f2;
+  --fg: #1f1b1a;
+  --muted: #6b625f;
+  --line: #ddd6d2;
+  --card: #ffffff;
+  --accent: #c8402c;
+  --accent-soft: #f6dcd6;
+  --on-accent: #ffffff;
+  /* Maquette (fil Reddit clair) */
+  --frame: #26211f;
+  --m-bg: #ffffff;
+  --m-fg: #050505;
+  --m-muted: #65676b;
+  --m-bar: #f0f2f5;
+  --m-btn: #e4e6eb;
+  --m-sep: #e4e6eb;
+  --m-media-a: #d9d3cf;
+  --m-media-b: #cfc8c3;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mock: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+    --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+    --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+    --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+  --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+  --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+  --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 32px;
+}
+header { max-width: 680px; display: grid; gap: 10px; }
+.eyebrow {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+h1 {
+  font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+/* Scène */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.side { position: relative; min-width: 0; }
+.wires {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible;
+}
+.wires path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.wires circle { fill: var(--accent); }
+
+.callout {
+  position: absolute; left: 0; right: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 4px;
+}
+.callout h3 {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: 17px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.2;
+}
+.callout p { margin: 0; font-size: 14px; color: var(--muted); }
+.callout .len {
+  justify-self: start;
+  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 8px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.callout.fixed .len { color: var(--muted); background: transparent; border: 1px dashed var(--line); }
+.num {
+  flex: none;
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  font: 700 11px/1 var(--body);
+}
+
+/* Téléphone */
+.phone {
+  background: var(--frame);
+  border-radius: 38px;
+  padding: 12px;
+  box-shadow: 0 24px 48px -24px rgba(0,0,0,.35);
+}
+.screen {
+  background: var(--m-bg); color: var(--m-fg);
+  border-radius: 28px; overflow: hidden;
+  font-family: var(--mock); font-size: 14px; line-height: 1.35;
+}
+.statusbar { height: 30px; display: flex; justify-content: center; align-items: center; }
+.statusbar span { width: 90px; height: 22px; border-radius: 12px; background: var(--frame); }
+.appbar { display: flex; gap: 14px; padding: 4px 14px 10px; font-size: 13px; color: var(--m-muted); font-weight: 600; border-bottom: 1px solid var(--m-sep); }
+.appbar b { color: var(--m-fg); }
+.ghostpost { padding: 12px 14px; display: grid; gap: 7px; border-bottom: 1px solid var(--m-sep); }
+.ghost { height: 9px; border-radius: 5px; background: var(--m-btn); }
+.post { padding: 10px 14px 6px; display: grid; gap: 8px; border-bottom: 1px solid var(--m-sep); }
+.post-head { display: flex; gap: 8px; align-items: center; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--m-media-b); flex: none; }
+.who { display: flex; gap: 6px; align-items: baseline; font-size: 12px; min-width: 0; }
+.who b { font-size: 13px; }
+.who small { color: var(--m-muted); font-size: 12px; }
+.dots { margin-left: auto; color: var(--m-muted); letter-spacing: 1px; font-weight: 700; }
+.ptitle { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.media {
+  aspect-ratio: 4 / 5; max-width: 100%; border-radius: 12px; overflow: hidden;
+  background: repeating-linear-gradient(135deg, var(--m-media-a) 0 14px, var(--m-media-b) 14px 28px);
+  position: relative;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 22px 16px 14px;
+}
+.overlay {
+  align-self: flex-start;
+  background: var(--m-bg); color: var(--m-fg);
+  font-weight: 800; font-size: 18px; line-height: 1.15;
+  padding: 9px 11px; border-radius: 6px; max-width: 85%;
+}
+.media-label {
+  align-self: center; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--m-fg); opacity: .65; font-weight: 700;
+}
+.linkbar {
+  display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  background: var(--m-bar); border-radius: 10px; padding: 8px 10px;
+}
+.linkbar .link { font-size: 12px; color: var(--m-muted); min-width: 0; }
+.cta {
+  flex: none; background: var(--m-fg); color: var(--m-bg);
+  font-weight: 700; font-size: 13px; padding: 7px 14px; border-radius: 999px;
+}
+.actions { display: flex; gap: 8px; align-items: center; padding: 2px 0 6px; font-size: 12px; font-weight: 700; color: var(--m-muted); }
+.pill { display: inline-flex; gap: 6px; align-items: center; background: var(--m-bar); border-radius: 999px; padding: 6px 10px; }
+.t { position: relative; }
+.badge {
+  position: absolute; top: -8px; right: -8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font: 700 10px/1 var(--body);
+  box-shadow: 0 0 0 2px var(--m-bg);
+}
+.badge.l { right: auto; left: -8px; }
+/* Notes */
+.notes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+}
+.note {
+  border-top: 2px solid var(--fg);
+  padding-top: 12px; display: grid; gap: 6px;
+}
+.note h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 18px; }
+.note p { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+
+/* Mobile : légende empilée sous la maquette */
+@media (max-width: 899px) {
+  .stage { grid-template-columns: 1fr; gap: 24px; justify-items: center; }
+  .phone { width: min(340px, 100%); order: 0; }
+  .side { order: 1; width: 100%; max-width: 520px; display: grid; gap: 10px; height: auto !important; }
+  .side.right { order: 2; margin-top: -14px; }
+  .callout { position: static; }
+  .wires { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .callout { transition: top .2s ease; }
+}
+</style>
+
+</head>
+<body style="margin:0">
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Guide de rédaction · Reddit Ads</div>
+    <h1>Anatomie d'une pub Reddit</h1>
+    <p class="lede">Placement illustré : une publication sponsorisée dans le fil de l'application mobile, le placement le plus vu. Les textes de la maquette sont des gabarits : ils montrent où chaque élément apparaît et la place qu'il occupe.</p>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Maquette annotée d'une publicité Reddit">
+    <div class="side left" id="left">
+      <div class="callout fixed" data-target="t1">
+        <h3><span class="num">1</span>Profil de la marque</h3>
+        <span class="len">Pas à rédiger</span>
+        <p>Photo et nom du profil Reddit (u/…), avec la mention « Sponsorisé ». Choisis une fois.</p>
+      </div>
+      <div class="callout" data-target="t2">
+        <h3><span class="num">2</span>Titre</h3>
+        <span class="len">300 max · viser 60 à 100</span>
+        <p>Le seul texte de la pub : il porte tout le message. Ton naturel, comme une vraie publication.</p>
+      </div>
+      <div class="callout" data-target="t4">
+        <h3><span class="num">4</span>Lien affiché</h3>
+        <span class="len">Domaine court</span>
+        <p>Doit correspondre au domaine de la page de destination.</p>
+      </div>
+    </div>
+
+    <div class="phone" id="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="statusbar"><span></span></div>
+        <div class="appbar"><b>Accueil</b><span>Populaire</span><span>Actualités</span></div>
+        <div class="ghostpost"><div class="ghost" style="width:45%"></div><div class="ghost" style="width:85%"></div></div>
+        <div class="post">
+          <div class="post-head">
+            <div class="avatar t" id="t1"></div>
+            <div class="who"><b>u/nomdelamarque</b><small>· Sponsorisé</small></div>
+            <div class="dots">···</div>
+          </div>
+          <p class="ptitle t" id="t2">Titre : une phrase naturelle qui parle au lecteur, comme une vraie publication Reddit.</p>
+          <div class="media">
+            <div class="overlay t" id="t3">Peu ou pas de texte incrusté</div>
+            <div class="media-label">Image ou vidéo · 4:5</div>
+          </div>
+          <div class="linkbar">
+            <span class="link"><span class="t" id="t4">votresite.com</span></span>
+            <span class="cta t" id="t5">En savoir plus</span>
+          </div>
+          <div class="actions t" id="t6">
+            <span class="pill">▲ 128 ▼</span>
+            <span class="pill">💬 34</span>
+            <span class="pill">Partager</span>
+          </div>
+        </div>
+        <div class="ghostpost"><div class="ghost" style="width:60%"></div><div class="ghost" style="width:90%"></div><div class="ghost" style="width:70%"></div></div>
+      </div>
+    </div>
+
+    <div class="side right" id="right">
+      <div class="callout" data-target="t3">
+        <h3><span class="num">3</span>Visuel ou vidéo</h3>
+        <span class="len">4:5, 1:1, 4:3 ou 16:9</span>
+        <p>Peu de texte incrusté. Vidéo : 5 à 30 s, sous-titrée. Carrousel : 2 à 6 cartes, 50 caractères par légende.</p>
+      </div>
+      <div class="callout fixed" data-target="t5">
+        <h3><span class="num">5</span>Bouton d'appel à l'action</h3>
+        <span class="len">Choisi dans une liste</span>
+        <p>Pas rédigé : « En savoir plus », « S'inscrire », « Voir plus », etc.</p>
+      </div>
+      <div class="callout fixed" data-target="t6">
+        <h3><span class="num">6</span>Votes et commentaires</h3>
+        <span class="len">À surveiller</span>
+        <p>Les gens votent et commentent la pub. Commentaires activables : s'ils sont ouverts, il faut y répondre.</p>
+      </div>
+    </div>
+
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </section>
+
+  <section class="notes" aria-label="Précisions">
+    <div class="note">
+      <h2>Un seul texte</h2>
+      <p>Contrairement à Meta et Google, pas de texte principal ni de description : le titre fait tout le travail. Seules les pubs texte (« free-form ») ont un corps de texte long.</p>
+    </div>
+    <div class="note">
+      <h2>Ton de la communauté</h2>
+      <p>Les utilisateurs de Reddit repèrent et boudent le ton publicitaire. Une pub qui ressemble à une vraie publication, utile et transparente, performe mieux.</p>
+    </div>
+    <div class="note">
+      <h2>Fil de conversation</h2>
+      <p>La même pub peut aussi s'afficher entre les commentaires d'une publication, en format plus compact : le titre doit rester clair même avec un petit visuel.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const svg = document.getElementById('wires');
+  const narrow = matchMedia('(max-width: 899px)');
+  const NS = 'http://www.w3.org/2000/svg';
+  const GAP = 12;
+
+  // Ajoute un petit numéro sur chaque élément de la maquette
+  document.querySelectorAll('.callout').forEach(c => {
+    const t = document.getElementById(c.dataset.target);
+    const b = document.createElement('span');
+    b.className = 'badge';
+    b.textContent = c.querySelector('.num').textContent;
+    if (c.dataset.target === 't1') b.classList.add('l');
+    t.appendChild(b);
+  });
+
+  function place(side) {
+    const sideBox = side.getBoundingClientRect();
+    const items = [...side.querySelectorAll('.callout')].map(c => {
+      const r = document.getElementById(c.dataset.target).getBoundingClientRect();
+      return { c, want: r.top + r.height / 2 - sideBox.top, h: c.offsetHeight };
+    }).sort((a, b) => a.want - b.want);
+    let y = 0;
+    items.forEach(it => {
+      it.top = Math.max(it.want - 22, y);
+      y = it.top + it.h + GAP;
+    });
+    const phoneH = document.getElementById('phone').offsetHeight;
+    let overflow = y - GAP - phoneH;
+    for (let i = items.length - 1; i >= 0 && overflow > 0; i--) {
+      const room = i === 0 ? items[0].top : items[i].top - (items[i - 1].top + items[i - 1].h + GAP);
+      const shift = Math.min(room, overflow);
+      for (let j = i; j < items.length; j++) items[j].top -= shift;
+      overflow -= shift;
+    }
+    items.forEach(it => { it.c.style.top = it.top + 'px'; });
+    side.style.height = Math.max(phoneH, y - GAP) + 'px';
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+    if (narrow.matches) {
+      document.querySelectorAll('.callout').forEach(c => c.style.top = '');
+      document.querySelectorAll('.side').forEach(s => s.style.height = '');
+      return;
+    }
+    place(document.getElementById('left'));
+    place(document.getElementById('right'));
+    const s = stage.getBoundingClientRect();
+    document.querySelectorAll('.callout').forEach(c => {
+      const isLeft = c.closest('.left');
+      const cb = c.getBoundingClientRect();
+      const tb = document.getElementById(c.dataset.target).getBoundingClientRect();
+      const y1 = cb.top + 22 - s.top;
+      const x1 = (isLeft ? cb.right : cb.left) - s.left;
+      const x2 = (isLeft ? tb.left - 6 : tb.right + 6) - s.left;
+      const y2 = tb.top + tb.height / 2 - s.top;
+      const pb = document.getElementById('phone').getBoundingClientRect();
+      const xm = (isLeft ? pb.left - 18 : pb.right + 18) - s.left;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${x1} ${y1} H${xm} L${x2} ${y2}`);
+      svg.appendChild(p);
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x2); dot.setAttribute('cy', y2); dot.setAttribute('r', 3.5);
+      svg.appendChild(dot);
+    });
+  }
+
+  let raf;
+  const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); };
+  new ResizeObserver(schedule).observe(stage);
+  narrow.addEventListener('change', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+
+</body>
+</html>
