@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomie d'une annonce Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Mise en page : maquette d'une page de résultats mobile au centre, annotations de part et d'autre reliées par des traits ; sur mobile, légende numérotée sous la maquette. */
+:root {
+  --bg: #f6f4f2;
+  --fg: #1f1b1a;
+  --muted: #6b625f;
+  --line: #ddd6d2;
+  --card: #ffffff;
+  --accent: #c8402c;
+  --accent-soft: #f6dcd6;
+  --on-accent: #ffffff;
+  /* Maquette (résultats de recherche, clair) */
+  --frame: #26211f;
+  --m-bg: #ffffff;
+  --m-fg: #202124;
+  --m-muted: #4d5156;
+  --m-link: #1a0dab;
+  --m-sep: #ebebeb;
+  --m-chip: #f1f3f4;
+  --m-ghost: #e8eaed;
+  --m-media-a: #d9d3cf;
+  --m-media-b: #cfc8c3;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mock: Arial, Helvetica, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+    --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+    --frame: #050404; --m-bg: #1f1f1f; --m-fg: #e8eaed; --m-muted: #bdc1c6; --m-link: #99c3ff;
+    --m-sep: #3c4043; --m-chip: #303134; --m-ghost: #303134; --m-media-a: #45403d; --m-media-b: #3b3633;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+  --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+  --frame: #050404; --m-bg: #1f1f1f; --m-fg: #e8eaed; --m-muted: #bdc1c6; --m-link: #99c3ff;
+  --m-sep: #3c4043; --m-chip: #303134; --m-ghost: #303134; --m-media-a: #45403d; --m-media-b: #3b3633;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 32px;
+}
+header { max-width: 680px; display: grid; gap: 10px; }
+.eyebrow {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+h1 {
+  font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+/* Scène */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.side { position: relative; min-width: 0; }
+.wires {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible;
+}
+.wires path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.wires circle { fill: var(--accent); }
+
+.callout {
+  position: absolute; left: 0; right: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 4px;
+}
+.callout h3 {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: 17px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.2;
+}
+.callout p { margin: 0; font-size: 14px; color: var(--muted); }
+.callout .len {
+  justify-self: start;
+  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 8px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.callout.fixed .len { color: var(--muted); background: transparent; border: 1px dashed var(--line); }
+.num {
+  flex: none;
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  font: 700 11px/1 var(--body);
+}
+
+/* Téléphone */
+.phone {
+  background: var(--frame);
+  border-radius: 38px;
+  padding: 12px;
+  box-shadow: 0 24px 48px -24px rgba(0,0,0,.35);
+}
+.screen {
+  background: var(--m-bg); color: var(--m-fg);
+  border-radius: 28px; overflow: hidden;
+  font-family: var(--mock); font-size: 14px; line-height: 1.4;
+}
+.statusbar { height: 30px; display: flex; justify-content: center; align-items: center; }
+.statusbar span { width: 90px; height: 22px; border-radius: 12px; background: var(--frame); }
+.search {
+  margin: 6px 12px 10px; padding: 10px 14px;
+  border-radius: 999px; background: var(--m-chip);
+  display: flex; align-items: center; gap: 10px; color: var(--m-fg);
+}
+.search .loupe {
+  width: 13px; height: 13px; border: 2px solid var(--m-muted); border-radius: 50%; position: relative; flex: none;
+}
+.search .loupe::after {
+  content: ""; position: absolute; width: 2px; height: 6px; background: var(--m-muted);
+  right: -4px; bottom: -5px; transform: rotate(-45deg);
+}
+.tabs { display: flex; gap: 18px; padding: 0 16px 8px; font-size: 13px; color: var(--m-muted); border-bottom: 1px solid var(--m-sep); }
+.tabs b { color: var(--m-fg); border-bottom: 2px solid var(--m-fg); padding-bottom: 6px; }
+.ad { padding: 12px 16px 14px; display: grid; gap: 8px; border-bottom: 8px solid var(--m-chip); }
+.sponso { font-size: 13px; font-weight: 700; color: var(--m-fg); }
+.brand { display: flex; align-items: center; gap: 10px; }
+.favicon { width: 28px; height: 28px; border-radius: 50%; background: var(--m-media-b); border: 1px solid var(--m-sep); flex: none; }
+.brand-txt { display: grid; line-height: 1.25; min-width: 0; }
+.brand-txt b { font-size: 14px; font-weight: 400; }
+.brand-txt small { font-size: 12px; color: var(--m-muted); }
+.headline { margin: 0; font-size: 19px; line-height: 1.3; color: var(--m-link); font-weight: 400; }
+.desc-row { display: flex; gap: 12px; align-items: flex-start; }
+.desc { margin: 0; font-size: 14px; color: var(--m-muted); flex: 1; min-width: 0; }
+.thumb {
+  width: 76px; aspect-ratio: 1; max-width: 100%; border-radius: 8px; flex: none;
+  background: repeating-linear-gradient(135deg, var(--m-media-a) 0 9px, var(--m-media-b) 9px 18px);
+}
+.callouts-line, .snippet { margin: 0; font-size: 13px; color: var(--m-muted); }
+.snippet b { color: var(--m-fg); font-weight: 400; }
+.sitelinks { display: grid; border-top: 1px solid var(--m-sep); }
+.sitelinks span {
+  display: flex; justify-content: space-between; padding: 9px 0;
+  border-bottom: 1px solid var(--m-sep); color: var(--m-link); font-size: 15px;
+}
+.sitelinks span::after { content: "›"; color: var(--m-muted); }
+.callbtn {
+  justify-self: start; display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--m-sep); border-radius: 999px; padding: 7px 14px;
+  font-size: 14px; color: var(--m-link);
+}
+.organic { padding: 14px 16px 18px; display: grid; gap: 7px; }
+.organic .o-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--m-muted); }
+.ghost { height: 10px; border-radius: 5px; background: var(--m-ghost); }
+.t { position: relative; }
+.badge {
+  position: absolute; top: -8px; right: -8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font: 700 10px/1 var(--body);
+  box-shadow: 0 0 0 2px var(--m-bg);
+}
+.badge.l { right: auto; left: -8px; }
+
+/* Notes */
+.notes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+}
+.note {
+  border-top: 2px solid var(--fg);
+  padding-top: 12px; display: grid; gap: 6px;
+}
+.note h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 18px; }
+.note p { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+
+/* Mobile : légende empilée sous la maquette */
+@media (max-width: 899px) {
+  .stage { grid-template-columns: 1fr; gap: 24px; justify-items: center; }
+  .phone { width: min(340px, 100%); order: 0; }
+  .side { order: 1; width: 100%; max-width: 520px; display: grid; gap: 10px; height: auto !important; }
+  .side.right { order: 2; margin-top: -14px; }
+  .callout { position: static; }
+  .wires { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .callout { transition: top .2s ease; }
+}
+</style>
+
+</head>
+<body style="margin:0">
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Guide de rédaction · Google Ads</div>
+    <h1>Anatomie d'une annonce Google</h1>
+    <p class="lede">Placement illustré : une annonce du Réseau de Recherche dans les résultats sur mobile, là où se fait la majorité des recherches. Les textes de la maquette sont des gabarits : ils montrent où chaque élément apparaît et la place qu'il occupe.</p>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Maquette annotée d'une annonce du Réseau de Recherche">
+    <div class="side left" id="left">
+      <div class="callout" data-target="t1">
+        <h3><span class="num">1</span>Nom et logo de l'entreprise</h3>
+        <span class="len">Nom : 25 caractères</span>
+        <p>Composants à fournir une fois pour le compte. La mention « Sponsorisé » est ajoutée par Google.</p>
+      </div>
+      <div class="callout" data-target="t3">
+        <h3><span class="num">3</span>Titres</h3>
+        <span class="len">30 caractères chacun</span>
+        <p>Jusqu'à 3 affichés côte à côte. En rédiger 10 à 15 : Google les combine.</p>
+      </div>
+      <div class="callout" data-target="t4">
+        <h3><span class="num">4</span>Descriptions</h3>
+        <span class="len">90 caractères chacune</span>
+        <p>Jusqu'à 2 affichées à la suite. En rédiger 4, chacune lisible seule.</p>
+      </div>
+      <div class="callout" data-target="t6">
+        <h3><span class="num">6</span>Accroches</h3>
+        <span class="len">25 caractères chacune</span>
+        <p>Avantages courts, sans lien. En rédiger au moins 4.</p>
+      </div>
+    </div>
+
+    <div class="phone" id="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="statusbar"><span></span></div>
+        <div class="search"><span class="loupe"></span>mot-clé recherché</div>
+        <div class="tabs"><b>Tous</b><span>Images</span><span>Vidéos</span><span>Actualités</span></div>
+        <div class="ad">
+          <span class="sponso">Sponsorisé</span>
+          <div class="brand">
+            <div class="favicon t" id="t1"></div>
+            <div class="brand-txt">
+              <b>Nom de l'entreprise</b>
+              <small><span class="t" id="t2">votresite.com › chemin-1 › chemin-2</span></small>
+            </div>
+          </div>
+          <p class="headline t" id="t3">Titre 1 avec le mot-clé | Titre 2 : le bénéfice | Titre 3 : l'action</p>
+          <div class="desc-row">
+            <p class="desc t" id="t4">Description 1 : l'offre et ce qui la distingue, en 90 caractères au plus. Description 2 : la preuve et l'appel à l'action.</p>
+            <div class="thumb t" id="t5"></div>
+          </div>
+          <p class="callouts-line"><span class="t" id="t6">Accroche 1 · Accroche 2 · Accroche 3</span></p>
+          <p class="snippet"><span class="t" id="t7"><b>Services :</b> Valeur 1, Valeur 2, Valeur 3</span></p>
+          <div class="sitelinks t" id="t8">
+            <span>Lien annexe 1</span>
+            <span>Lien annexe 2</span>
+            <span>Lien annexe 3</span>
+          </div>
+          <span class="callbtn t" id="t9">✆ Appeler</span>
+        </div>
+        <div class="organic">
+          <span class="o-label">Résultats naturels</span>
+          <div class="ghost" style="width:55%"></div>
+          <div class="ghost" style="width:90%"></div>
+          <div class="ghost" style="width:75%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side right" id="right">
+      <div class="callout" data-target="t2">
+        <h3><span class="num">2</span>URL affichée</h3>
+        <span class="len">Chemins : 15 caractères</span>
+        <p>Le domaine vient de l'URL finale. On rédige les 2 chemins (ex. › plex › financement).</p>
+      </div>
+      <div class="callout fixed" data-target="t5">
+        <h3><span class="num">5</span>Image</h3>
+        <span class="len">Facultatif</span>
+        <p>Composant image, carré (1:1) ou paysage (1,91:1). Google décide s'il l'affiche.</p>
+      </div>
+      <div class="callout" data-target="t7">
+        <h3><span class="num">7</span>Extrait structuré</h3>
+        <span class="len">Valeurs : 25 caractères</span>
+        <p>En-tête choisi dans une liste (Services, Types…), puis au moins 3 valeurs.</p>
+      </div>
+      <div class="callout" data-target="t8">
+        <h3><span class="num">8</span>Liens annexes</h3>
+        <span class="len">Titre : 25 · Lignes : 35</span>
+        <p>Liens vers d'autres pages. Au moins 4. Les 2 lignes de description s'affichent surtout sur ordinateur.</p>
+      </div>
+      <div class="callout fixed" data-target="t9">
+        <h3><span class="num">9</span>Appel</h3>
+        <span class="len">Numéro seulement</span>
+        <p>Rien à rédiger. Jamais de numéro de téléphone dans les titres ou descriptions.</p>
+      </div>
+    </div>
+
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </section>
+
+  <section class="notes" aria-label="Précisions">
+    <div class="note">
+      <h2>Limites strictes</h2>
+      <p>Contrairement à Meta, Google ne coupe pas un texte trop long : il le refuse. Les longueurs sont des maximums, espaces compris.</p>
+    </div>
+    <div class="note">
+      <h2>Google choisit l'assemblage</h2>
+      <p>Chaque annonce combine 2 ou 3 titres et 1 ou 2 descriptions parmi ceux rédigés. Chaque texte doit donc se lire seul et dans n'importe quel ordre.</p>
+    </div>
+    <div class="note">
+      <h2>Composants affichés au cas par cas</h2>
+      <p>Image, accroches, extrait, liens annexes et appel ne s'affichent pas tous à chaque fois. Google les montre selon la position de l'annonce et l'appareil.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const svg = document.getElementById('wires');
+  const narrow = matchMedia('(max-width: 899px)');
+  const NS = 'http://www.w3.org/2000/svg';
+  const GAP = 12;
+  const LEFT_BADGE = ['t1', 't9'];
+
+  // Ajoute un petit numéro sur chaque élément de la maquette
+  document.querySelectorAll('.callout').forEach(c => {
+    const t = document.getElementById(c.dataset.target);
+    const b = document.createElement('span');
+    b.className = 'badge' + (LEFT_BADGE.includes(c.dataset.target) ? ' l' : '');
+    b.textContent = c.querySelector('.num').textContent;
+    t.appendChild(b);
+  });
+
+  function place(side) {
+    const sideBox = side.getBoundingClientRect();
+    const items = [...side.querySelectorAll('.callout')].map(c => {
+      const r = document.getElementById(c.dataset.target).getBoundingClientRect();
+      return { c, want: r.top + r.height / 2 - sideBox.top, h: c.offsetHeight };
+    }).sort((a, b) => a.want - b.want);
+    let y = 0;
+    items.forEach(it => {
+      it.top = Math.max(it.want - 22, y);
+      y = it.top + it.h + GAP;
+    });
+    const phoneH = document.getElementById('phone').offsetHeight;
+    let overflow = y - GAP - phoneH;
+    for (let i = items.length - 1; i >= 0 && overflow > 0; i--) {
+      const room = i === 0 ? items[0].top : items[i].top - (items[i - 1].top + items[i - 1].h + GAP);
+      const shift = Math.min(room, overflow);
+      for (let j = i; j < items.length; j++) items[j].top -= shift;
+      overflow -= shift;
+    }
+    items.forEach(it => { it.c.style.top = it.top + 'px'; });
+    side.style.height = Math.max(phoneH, y - GAP) + 'px';
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+    if (narrow.matches) {
+      document.querySelectorAll('.callout').forEach(c => c.style.top = '');
+      document.querySelectorAll('.side').forEach(s => s.style.height = '');
+      return;
+    }
+    place(document.getElementById('left'));
+    place(document.getElementById('right'));
+    const s = stage.getBoundingClientRect();
+    const pb = document.getElementById('phone').getBoundingClientRect();
+    document.querySelectorAll('.callout').forEach(c => {
+      const isLeft = c.closest('.left');
+      const cb = c.getBoundingClientRect();
+      const tb = document.getElementById(c.dataset.target).getBoundingClientRect();
+      const y1 = cb.top + 22 - s.top;
+      const x1 = (isLeft ? cb.right : cb.left) - s.left;
+      const x2 = (isLeft ? tb.left - 6 : tb.right + 6) - s.left;
+      const y2 = tb.top + tb.height / 2 - s.top;
+      const xm = (isLeft ? pb.left - 18 : pb.right + 18) - s.left;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${x1} ${y1} H${xm} L${x2} ${y2}`);
+      svg.appendChild(p);
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x2); dot.setAttribute('cy', y2); dot.setAttribute('r', 3.5);
+      svg.appendChild(dot);
+    });
+  }
+
+  let raf;
+  const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); };
+  new ResizeObserver(schedule).observe(stage);
+  narrow.addEventListener('change', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+
+</body>
+</html>
