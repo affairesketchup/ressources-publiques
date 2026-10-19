@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomie d'une pub Meta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Mise en page : maquette de téléphone au centre, annotations de part et d'autre reliées par des traits ; sur mobile, légende numérotée sous la maquette. */
+:root {
+  --bg: #f6f4f2;
+  --fg: #1f1b1a;
+  --muted: #6b625f;
+  --line: #ddd6d2;
+  --card: #ffffff;
+  --accent: #c8402c;
+  --accent-soft: #f6dcd6;
+  --on-accent: #ffffff;
+  /* Maquette (fil Facebook clair) */
+  --frame: #26211f;
+  --m-bg: #ffffff;
+  --m-fg: #050505;
+  --m-muted: #65676b;
+  --m-bar: #f0f2f5;
+  --m-btn: #e4e6eb;
+  --m-sep: #e4e6eb;
+  --m-media-a: #d9d3cf;
+  --m-media-b: #cfc8c3;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mock: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+    --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+    --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+    --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+  --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+  --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+  --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 32px;
+}
+header { max-width: 680px; display: grid; gap: 10px; }
+.eyebrow {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+h1 {
+  font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+/* Scène */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.side { position: relative; min-width: 0; }
+.wires {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible;
+}
+.wires path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.wires circle { fill: var(--accent); }
+
+.callout {
+  position: absolute; left: 0; right: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 4px;
+}
+.callout h3 {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: 17px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.2;
+}
+.callout p { margin: 0; font-size: 14px; color: var(--muted); }
+.callout .len {
+  justify-self: start;
+  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 8px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.callout.fixed .len { color: var(--muted); background: transparent; border: 1px dashed var(--line); }
+.num {
+  flex: none;
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  font: 700 11px/1 var(--body);
+}
+
+/* Téléphone */
+.phone {
+  background: var(--frame);
+  border-radius: 38px;
+  padding: 12px;
+  box-shadow: 0 24px 48px -24px rgba(0,0,0,.35);
+}
+.screen {
+  background: var(--m-bg); color: var(--m-fg);
+  border-radius: 28px; overflow: hidden;
+  font-family: var(--mock); font-size: 14px; line-height: 1.34;
+}
+.statusbar { height: 30px; display: flex; justify-content: center; align-items: center; }
+.statusbar span { width: 90px; height: 22px; border-radius: 12px; background: var(--frame); }
+.feedsep { height: 8px; background: var(--m-bar); }
+.post-head { display: flex; gap: 8px; align-items: center; padding: 10px 12px 6px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--m-media-b); flex: none; }
+.who { display: grid; line-height: 1.2; min-width: 0; }
+.who b { font-size: 14px; }
+.who small { color: var(--m-muted); font-size: 12px; }
+.dots { margin-left: auto; color: var(--m-muted); letter-spacing: 1px; font-weight: 700; }
+.primary { padding: 0 12px 10px; margin: 0; }
+.primary .more { color: var(--m-muted); font-weight: 600; }
+.media {
+  aspect-ratio: 4 / 5; max-width: 100%;
+  background: repeating-linear-gradient(135deg, var(--m-media-a) 0 14px, var(--m-media-b) 14px 28px);
+  position: relative;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 26px 18px 14px;
+}
+.overlay {
+  align-self: flex-start;
+  background: var(--m-bg); color: var(--m-fg);
+  font-weight: 800; font-size: 20px; line-height: 1.15;
+  padding: 10px 12px; border-radius: 6px; max-width: 85%;
+}
+.media-label {
+  align-self: center; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--m-fg); opacity: .65; font-weight: 700;
+}
+.bar {
+  background: var(--m-bar);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+}
+.bar-text { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.bar-text .link { font-size: 12px; color: var(--m-muted); text-transform: uppercase; }
+.bar-text .headline { font-size: 15px; font-weight: 700; }
+.bar-text .desc { font-size: 13px; color: var(--m-muted); }
+.cta {
+  flex: none; background: var(--m-btn); color: var(--m-fg);
+  font-weight: 600; font-size: 14px; padding: 8px 12px; border-radius: 6px;
+}
+.stats { display: flex; justify-content: space-between; padding: 8px 12px; color: var(--m-muted); font-size: 13px; }
+.actions {
+  display: flex; justify-content: space-around; border-top: 1px solid var(--m-sep);
+  margin: 0 12px; padding: 8px 0 12px; color: var(--m-muted); font-weight: 600; font-size: 13px;
+}
+.t { position: relative; }
+.primary .badge { top: -6px; right: 6px; }
+.badge {
+  position: absolute; top: -8px; right: -8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font: 700 10px/1 var(--body);
+  box-shadow: 0 0 0 2px var(--m-bg);
+}
+.bar .badge { box-shadow: 0 0 0 2px var(--m-bar); }
+
+/* Notes */
+.notes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+}
+.note {
+  border-top: 2px solid var(--fg);
+  padding-top: 12px; display: grid; gap: 6px;
+}
+.note h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 18px; }
+.note p { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+
+/* Mobile : légende empilée sous la maquette */
+@media (max-width: 899px) {
+  .stage { grid-template-columns: 1fr; gap: 24px; justify-items: center; }
+  .phone { width: min(340px, 100%); order: 0; }
+  .side { order: 1; width: 100%; max-width: 520px; display: grid; gap: 10px; height: auto !important; }
+  .side.right { order: 2; margin-top: -14px; }
+  .callout { position: static; }
+  .wires { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .callout { transition: top .2s ease; }
+}
+</style>
+
+</head>
+<body style="margin:0">
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Guide de rédaction · Meta</div>
+    <h1>Anatomie d'une pub Meta</h1>
+    <p class="lede">Placement illustré : le fil Facebook sur mobile, le plus utilisé et celui qui affiche tous les éléments. Les textes de la maquette sont des gabarits : ils montrent où chaque élément apparaît et la place qu'il occupe.</p>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Maquette annotée d'une publicité">
+    <div class="side left" id="left">
+      <div class="callout fixed" data-target="t1">
+        <h3><span class="num">1</span>Nom et photo de la page</h3>
+        <span class="len">Pas à rédiger</span>
+        <p>Viennent de la page Facebook, avec la mention « Commandité ».</p>
+      </div>
+      <div class="callout" data-target="t2">
+        <h3><span class="num">2</span>Texte principal</h3>
+        <span class="len">≈ 125 caractères visibles</span>
+        <p>Coupé par « Voir plus ». La 1re ligne doit accrocher. Jusqu'à 5 variantes.</p>
+      </div>
+      <div class="callout" data-target="t4">
+        <h3><span class="num">4</span>Lien affiché</h3>
+        <span class="len">Facultatif</span>
+        <p>Le domaine, court et en majuscules (ex. VOTRESITE.COM).</p>
+      </div>
+      <div class="callout" data-target="t6">
+        <h3><span class="num">6</span>Description</h3>
+        <span class="len">≈ 25 à 30 caractères</span>
+        <p>Ne s'affiche pas toujours : rien d'essentiel ici. Jusqu'à 5 variantes.</p>
+      </div>
+    </div>
+
+    <div class="phone" id="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="statusbar"><span></span></div>
+        <div class="feedsep"></div>
+        <div class="post-head">
+          <div class="avatar t" id="t1"></div>
+          <div class="who"><b>Nom de la page</b><small>Commandité · 🌐</small></div>
+          <div class="dots">···</div>
+        </div>
+        <p class="primary t" id="t2">Première ligne : l'accroche qui arrête le défilement. Puis le problème ou le bénéfice, en mots simples, pour donner envie… <span class="more">Voir plus</span></p>
+        <div class="media">
+          <div class="overlay t" id="t3">Texte incrusté : 5 à 8 mots</div>
+          <div class="media-label">Image ou vidéo · 4:5</div>
+        </div>
+        <div class="bar">
+          <div class="bar-text">
+            <span class="link"><span class="t" id="t4">VOTRESITE.COM</span></span>
+            <span class="headline"><span class="t" id="t5">Le bénéfice en une idée</span></span>
+            <span class="desc"><span class="t" id="t6">Description courte</span></span>
+          </div>
+          <div class="cta t" id="t7">En savoir plus</div>
+        </div>
+        <div class="stats"><span>48 réactions</span><span>12 commentaires · 5 partages</span></div>
+        <div class="actions"><span>J'aime</span><span>Commenter</span><span>Partager</span></div>
+      </div>
+    </div>
+
+    <div class="side right" id="right">
+      <div class="callout" data-target="t3">
+        <h3><span class="num">3</span>Texte incrusté</h3>
+        <span class="len">5 à 8 mots</span>
+        <p>Dans le visuel, lisible en 1 seconde. Visuel 4:5 (1080 × 1350 px).</p>
+      </div>
+      <div class="callout" data-target="t5">
+        <h3><span class="num">5</span>Titre</h3>
+        <span class="len">≈ 27 à 40 caractères</span>
+        <p>Le bénéfice ou l'offre. Coupé au-delà sur mobile. Jusqu'à 5 variantes.</p>
+      </div>
+      <div class="callout fixed" data-target="t7">
+        <h3><span class="num">7</span>Bouton d'appel à l'action</h3>
+        <span class="len">Choisi dans une liste</span>
+        <p>Pas rédigé : « En savoir plus », « Réserver », « Nous contacter », etc.</p>
+      </div>
+    </div>
+
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </section>
+
+  <section class="notes" aria-label="Autres placements">
+    <div class="note">
+      <h2>Fil Instagram</h2>
+      <p>Le titre et la description ne s'affichent pas. Le bouton apparaît dans une bande sous l'image, et le texte principal passe sous l'image, après le nom du compte (coupé après environ 2 lignes).</p>
+    </div>
+    <div class="note">
+      <h2>Reels et Stories (9:16)</h2>
+      <p>Le texte principal s'affiche par-dessus la vidéo, en bas : le garder très court. Laisser le haut (≈ 14 %) et le bas (≈ 20 à 35 %) du visuel sans texte incrusté.</p>
+    </div>
+    <div class="note">
+      <h2>Longueurs</h2>
+      <p>Recommandations de Meta à la mi-2026. Elles changent souvent : les revalider avant chaque campagne.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const svg = document.getElementById('wires');
+  const narrow = matchMedia('(max-width: 899px)');
+  const NS = 'http://www.w3.org/2000/svg';
+  const GAP = 12;
+
+  // Ajoute un petit numéro sur chaque élément de la maquette
+  document.querySelectorAll('.callout').forEach(c => {
+    const t = document.getElementById(c.dataset.target);
+    const b = document.createElement('span');
+    b.className = 'badge';
+    b.textContent = c.querySelector('.num').textContent;
+    if (c.dataset.target === 't7' || c.dataset.target === 't1') { b.style.right = 'auto'; b.style.left = '-8px'; }
+    t.appendChild(b);
+  });
+
+  function place(side) {
+    const sideBox = side.getBoundingClientRect();
+    const items = [...side.querySelectorAll('.callout')].map(c => {
+      const r = document.getElementById(c.dataset.target).getBoundingClientRect();
+      return { c, want: r.top + r.height / 2 - sideBox.top, h: c.offsetHeight };
+    }).sort((a, b) => a.want - b.want);
+    let y = 0;
+    items.forEach(it => {
+      it.top = Math.max(it.want - 22, y);
+      y = it.top + it.h + GAP;
+    });
+    const phoneH = document.getElementById('phone').offsetHeight;
+    let overflow = y - GAP - phoneH;
+    for (let i = items.length - 1; i >= 0 && overflow > 0; i--) {
+      const room = i === 0 ? items[0].top : items[i].top - (items[i - 1].top + items[i - 1].h + GAP);
+      const shift = Math.min(room, overflow);
+      for (let j = i; j < items.length; j++) items[j].top -= shift;
+      overflow -= shift;
+    }
+    items.forEach(it => { it.c.style.top = it.top + 'px'; });
+    side.style.height = Math.max(phoneH, y - GAP) + 'px';
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+    if (narrow.matches) {
+      document.querySelectorAll('.callout').forEach(c => c.style.top = '');
+      document.querySelectorAll('.side').forEach(s => s.style.height = '');
+      return;
+    }
+    place(document.getElementById('left'));
+    place(document.getElementById('right'));
+    const s = stage.getBoundingClientRect();
+    document.querySelectorAll('.callout').forEach(c => {
+      const isLeft = c.closest('.left');
+      const cb = c.getBoundingClientRect();
+      const tb = document.getElementById(c.dataset.target).getBoundingClientRect();
+      const y1 = cb.top + 22 - s.top;
+      const x1 = (isLeft ? cb.right : cb.left) - s.left;
+      const x2 = (isLeft ? tb.left - 6 : tb.right + 6) - s.left;
+      const y2 = tb.top + tb.height / 2 - s.top;
+      const pb = document.getElementById('phone').getBoundingClientRect();
+      const xm = (isLeft ? pb.left - 18 : pb.right + 18) - s.left;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${x1} ${y1} H${xm} L${x2} ${y2}`);
+      svg.appendChild(p);
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x2); dot.setAttribute('cy', y2); dot.setAttribute('r', 3.5);
+      svg.appendChild(dot);
+    });
+  }
+
+  let raf;
+  const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); };
+  new ResizeObserver(schedule).observe(stage);
+  narrow.addEventListener('change', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+
+</body>
+</html>
