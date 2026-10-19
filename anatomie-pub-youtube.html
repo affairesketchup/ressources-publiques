@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomie d'une pub YouTube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Mise en page : maquette de téléphone (lecture YouTube) au centre, annotations de part et d'autre reliées par des traits ; sur mobile, légende numérotée sous la maquette. */
+:root {
+  --bg: #f6f4f2;
+  --fg: #1f1b1a;
+  --muted: #6b625f;
+  --line: #ddd6d2;
+  --card: #ffffff;
+  --accent: #c8402c;
+  --accent-soft: #f6dcd6;
+  --on-accent: #ffffff;
+  /* Maquette (page de lecture YouTube, clair) */
+  --frame: #26211f;
+  --m-bg: #ffffff;
+  --m-fg: #050505;
+  --m-muted: #65676b;
+  --m-bar: #f0f2f5;
+  --m-btn: #e4e6eb;
+  --m-sep: #e4e6eb;
+  --m-media-a: #d9d3cf;
+  --m-media-b: #cfc8c3;
+  --m-player: #141110;
+  --m-player-a: #2b2624;
+  --m-player-b: #241f1d;
+  --m-cta: #065fd4;
+  --m-on-cta: #ffffff;
+  --m-adbar: #f2c200;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mock: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+    --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+    --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+    --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633; --m-player: #000000; --m-player-a: #2b2624; --m-player-b: #221d1b; --m-cta: #3ea6ff; --m-on-cta: #0f0f0f; --m-adbar: #f2c200;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171413; --fg: #f2ecea; --muted: #a89f9b; --line: #3a3330; --card: #211d1b;
+  --accent: #ff7a63; --accent-soft: #4a2620; --on-accent: #1a0d0a;
+  --frame: #050404; --m-bg: #242526; --m-fg: #e4e6eb; --m-muted: #b0b3b8;
+  --m-bar: #3a3b3c; --m-btn: #4e4f50; --m-sep: #3e4042; --m-media-a: #45403d; --m-media-b: #3b3633; --m-player: #000000; --m-player-a: #2b2624; --m-player-b: #221d1b; --m-cta: #3ea6ff; --m-on-cta: #0f0f0f; --m-adbar: #f2c200;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 32px;
+}
+header { max-width: 680px; display: grid; gap: 10px; }
+.eyebrow {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+h1 {
+  font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+/* Scène */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.side { position: relative; min-width: 0; }
+.wires {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible;
+}
+.wires path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.wires circle { fill: var(--accent); }
+
+.callout {
+  position: absolute; left: 0; right: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 4px;
+}
+.callout h3 {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: 17px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.2;
+}
+.callout p { margin: 0; font-size: 14px; color: var(--muted); }
+.callout .len {
+  justify-self: start;
+  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 8px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.callout.fixed .len { color: var(--muted); background: transparent; border: 1px dashed var(--line); }
+.num {
+  flex: none;
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  font: 700 11px/1 var(--body);
+}
+
+/* Téléphone */
+.phone {
+  background: var(--frame);
+  border-radius: 38px;
+  padding: 12px;
+  box-shadow: 0 24px 48px -24px rgba(0,0,0,.35);
+}
+.screen {
+  background: var(--m-bg); color: var(--m-fg);
+  border-radius: 28px; overflow: hidden;
+  font-family: var(--mock); font-size: 14px; line-height: 1.35;
+}
+.statusbar { height: 30px; display: flex; justify-content: center; align-items: center; background: var(--m-player); }
+.statusbar span { width: 90px; height: 22px; border-radius: 12px; background: var(--frame); }
+.player {
+  aspect-ratio: 16 / 9; max-width: 100%; position: relative;
+  background: repeating-linear-gradient(135deg, var(--m-player-a) 0 12px, var(--m-player-b) 12px 24px);
+  color: #ffffff;
+}
+.player .overlay {
+  position: absolute; top: 12px; left: 12px; max-width: 70%;
+  background: #ffffff; color: #141110; font-weight: 800; font-size: 14px; line-height: 1.15;
+  padding: 6px 8px; border-radius: 4px;
+}
+.player .vlabel {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; opacity: .7;
+}
+.player .subs {
+  position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
+  background: rgba(8,8,8,.75); font-size: 11px; padding: 2px 6px; border-radius: 3px; white-space: nowrap;
+}
+.player .adinfo {
+  position: absolute; left: 10px; bottom: 10px; font-size: 11px; font-weight: 700;
+  background: rgba(8,8,8,.6); padding: 3px 6px; border-radius: 4px;
+}
+.player .skip {
+  position: absolute; right: 0; bottom: 12px; font-size: 12px; font-weight: 700;
+  background: rgba(8,8,8,.75); border: 1px solid rgba(255,255,255,.35); border-right: 0;
+  padding: 6px 10px;
+}
+.player .progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.3); }
+.player .progress::before { content: ""; position: absolute; inset: 0 70% 0 0; background: var(--m-adbar); }
+.actioncard { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--m-sep); }
+.logo { width: 34px; height: 34px; border-radius: 50%; background: var(--m-media-b); flex: none; }
+.ac-text { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.ac-text .headline { font-weight: 700; font-size: 15px; }
+.ac-text .link { font-size: 12px; color: var(--m-muted); }
+.ac-text .link b { font-weight: 700; color: var(--m-fg); }
+.cta {
+  flex: none; background: var(--m-cta); color: var(--m-on-cta);
+  font-weight: 700; font-size: 13px; padding: 8px 14px; border-radius: 999px;
+}
+.chips { display: flex; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--m-sep); }
+.chips span { background: var(--m-bar); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.hosted { padding: 12px; display: grid; gap: 8px; }
+.ghost { height: 9px; border-radius: 5px; background: var(--m-btn); }
+.reco { display: grid; grid-template-columns: 110px 1fr; gap: 10px; padding: 0 12px 12px; }
+.reco .th { aspect-ratio: 16 / 9; max-width: 100%; border-radius: 6px; background: var(--m-btn); }
+.reco .lines { display: grid; gap: 6px; align-content: start; padding-top: 2px; }
+.t { position: relative; }
+.badge {
+  position: absolute; top: -8px; right: -8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font: 700 10px/1 var(--body);
+  box-shadow: 0 0 0 2px var(--m-bg);
+}
+.badge.l { right: auto; left: -8px; }
+.player.t > .badge { top: 8px; right: 8px; }
+/* Notes */
+.notes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+}
+.note {
+  border-top: 2px solid var(--fg);
+  padding-top: 12px; display: grid; gap: 6px;
+}
+.note h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 18px; }
+.note p { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+
+/* Mobile : légende empilée sous la maquette */
+@media (max-width: 899px) {
+  .stage { grid-template-columns: 1fr; gap: 24px; justify-items: center; }
+  .phone { width: min(340px, 100%); order: 0; }
+  .side { order: 1; width: 100%; max-width: 520px; display: grid; gap: 10px; height: auto !important; }
+  .side.right { order: 2; margin-top: -14px; }
+  .callout { position: static; }
+  .wires { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .callout { transition: top .2s ease; }
+}
+</style>
+
+</head>
+<body style="margin:0">
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Guide de rédaction · YouTube Ads</div>
+    <h1>Anatomie d'une pub YouTube</h1>
+    <p class="lede">Placement illustré : une annonce vidéo horizontale (16:9) désactivable, diffusée avant ou pendant une vidéo, sur l'application mobile où se fait la majorité du visionnement. Les textes de la maquette sont des gabarits : ils montrent où chaque élément apparaît.</p>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Maquette annotée d'une publicité YouTube">
+    <div class="side left" id="left">
+      <div class="callout" data-target="t1">
+        <h3><span class="num">1</span>La vidéo (le script)</h3>
+        <span class="len">Le vrai texte de la pub</span>
+        <p>Accroche et marque dans les 5 premières secondes. Horizontale 16:9, 1920 × 1080 px.</p>
+      </div>
+      <div class="callout fixed" data-target="t4">
+        <h3><span class="num">4</span>Logo et nom</h3>
+        <span class="len">Nom : 25 caractères</span>
+        <p>Logo de la chaîne ou de l'entreprise. Fourni une fois.</p>
+      </div>
+      <div class="callout" data-target="t5">
+        <h3><span class="num">5</span>Titre</h3>
+        <span class="len">15 caractères</span>
+        <p>Très court, à côté du bouton. Jusqu'à 40 en campagne Demand Gen (à confirmer).</p>
+      </div>
+      <div class="callout" data-target="t6">
+        <h3><span class="num">6</span>URL affichée</h3>
+        <span class="len">Domaine court</span>
+        <p>Le domaine de la page de destination.</p>
+      </div>
+    </div>
+
+    <div class="phone" id="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="statusbar"><span></span></div>
+        <div class="player t" id="t1">
+          <div class="vlabel">Votre vidéo · 16:9</div>
+          <div class="overlay t" id="t2">Texte incrusté court</div>
+          <div class="subs">Sous-titres de la narration</div>
+          <div class="adinfo t" id="t3">Sponsorisé · 0:04</div>
+          <div class="skip t" id="t3b">Passer ›</div>
+          <div class="progress"></div>
+        </div>
+        <div class="actioncard">
+          <div class="logo t" id="t4"></div>
+          <div class="ac-text">
+            <span class="headline"><span class="t" id="t5">Titre court</span></span>
+            <span class="link"><b>Sponsorisé</b> · <span class="t" id="t6">votresite.com</span></span>
+          </div>
+          <span class="cta t" id="t7">Réserver</span>
+        </div>
+        <div class="chips t" id="t8"><span>Lien annexe 1</span><span>Lien annexe 2</span><span>Lien 3</span></div>
+        <div class="hosted">
+          <div class="ghost" style="width:85%;height:12px"></div>
+          <div class="ghost" style="width:50%"></div>
+        </div>
+        <div class="reco"><div class="th"></div><div class="lines"><div class="ghost" style="width:95%"></div><div class="ghost" style="width:60%"></div></div></div>
+        <div class="reco"><div class="th"></div><div class="lines"><div class="ghost" style="width:90%"></div><div class="ghost" style="width:55%"></div></div></div>
+      </div>
+    </div>
+
+    <div class="side right" id="right">
+      <div class="callout" data-target="t2">
+        <h3><span class="num">2</span>Texte incrusté et sous-titres</h3>
+        <span class="len">Quelques mots</span>
+        <p>Renforce l'idée clé et l'appel à l'action. Sous-titres pour qui écoute sans le son.</p>
+      </div>
+      <div class="callout fixed" data-target="t3b">
+        <h3><span class="num">3</span>« Sponsorisé » et « Passer »</h3>
+        <span class="len">Pas à rédiger</span>
+        <p>« Passer » apparaît après 5 s. En campagne Vidéo, payé seulement si la personne regarde 30 s (ou tout) ou clique.</p>
+      </div>
+      <div class="callout" data-target="t7">
+        <h3><span class="num">7</span>Bouton d'appel à l'action</h3>
+        <span class="len">10 caractères</span>
+        <p>Rédigé en campagne Vidéo (ex. « Réserver »). Choisi dans une liste en Demand Gen.</p>
+      </div>
+      <div class="callout" data-target="t8">
+        <h3><span class="num">8</span>Liens annexes</h3>
+        <span class="len">Titre : 25 caractères</span>
+        <p>Facultatifs. Affichés sous la vidéo sur mobile, selon l'espace.</p>
+      </div>
+    </div>
+
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </section>
+
+  <section class="notes" aria-label="Précisions">
+    <div class="note">
+      <h2>Le script avant tout</h2>
+      <p>Sur YouTube, le texte écrit est minime : c'est la vidéo qui vend. Le travail de rédaction porte surtout sur le script, la narration et le texte incrusté.</p>
+    </div>
+    <div class="note">
+      <h2>Sur ordinateur</h2>
+      <p>Le titre de la vidéo YouTube s'affiche en haut du lecteur, le bouton en bas à gauche, et une bannière associée (300 × 60 px) peut apparaître à droite du lecteur.</p>
+    </div>
+    <div class="note">
+      <h2>Sur la télé</h2>
+      <p>Une bonne part du visionnement se fait sur téléviseur, où personne ne clique : le message et l'appel à l'action doivent être dits et montrés dans la vidéo.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const svg = document.getElementById('wires');
+  const narrow = matchMedia('(max-width: 899px)');
+  const NS = 'http://www.w3.org/2000/svg';
+  const GAP = 12;
+
+  // Ajoute un petit numéro sur chaque élément de la maquette
+  document.querySelectorAll('.callout').forEach(c => {
+    const t = document.getElementById(c.dataset.target);
+    const b = document.createElement('span');
+    b.className = 'badge';
+    b.textContent = c.querySelector('.num').textContent;
+    if (['t4', 't3b'].includes(c.dataset.target)) b.classList.add('l');
+    t.appendChild(b);
+  });
+
+  function place(side) {
+    const sideBox = side.getBoundingClientRect();
+    const items = [...side.querySelectorAll('.callout')].map(c => {
+      const r = document.getElementById(c.dataset.target).getBoundingClientRect();
+      return { c, want: r.top + r.height / 2 - sideBox.top, h: c.offsetHeight };
+    }).sort((a, b) => a.want - b.want);
+    let y = 0;
+    items.forEach(it => {
+      it.top = Math.max(it.want - 22, y);
+      y = it.top + it.h + GAP;
+    });
+    const phoneH = document.getElementById('phone').offsetHeight;
+    let overflow = y - GAP - phoneH;
+    for (let i = items.length - 1; i >= 0 && overflow > 0; i--) {
+      const room = i === 0 ? items[0].top : items[i].top - (items[i - 1].top + items[i - 1].h + GAP);
+      const shift = Math.min(room, overflow);
+      for (let j = i; j < items.length; j++) items[j].top -= shift;
+      overflow -= shift;
+    }
+    items.forEach(it => { it.c.style.top = it.top + 'px'; });
+    side.style.height = Math.max(phoneH, y - GAP) + 'px';
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+    if (narrow.matches) {
+      document.querySelectorAll('.callout').forEach(c => c.style.top = '');
+      document.querySelectorAll('.side').forEach(s => s.style.height = '');
+      return;
+    }
+    place(document.getElementById('left'));
+    place(document.getElementById('right'));
+    const s = stage.getBoundingClientRect();
+    document.querySelectorAll('.callout').forEach(c => {
+      const isLeft = c.closest('.left');
+      const cb = c.getBoundingClientRect();
+      const tb = document.getElementById(c.dataset.target).getBoundingClientRect();
+      const y1 = cb.top + 22 - s.top;
+      const x1 = (isLeft ? cb.right : cb.left) - s.left;
+      const x2 = (isLeft ? tb.left - 6 : tb.right + 6) - s.left;
+      const y2 = tb.top + tb.height / 2 - s.top;
+      const pb = document.getElementById('phone').getBoundingClientRect();
+      const xm = (isLeft ? pb.left - 18 : pb.right + 18) - s.left;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${x1} ${y1} H${xm} L${x2} ${y2}`);
+      svg.appendChild(p);
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x2); dot.setAttribute('cy', y2); dot.setAttribute('r', 3.5);
+      svg.appendChild(dot);
+    });
+  }
+
+  let raf;
+  const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); };
+  new ResizeObserver(schedule).observe(stage);
+  narrow.addEventListener('change', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
+
+</body>
+</html>
